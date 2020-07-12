@@ -17,13 +17,13 @@ const Error = styled.p`
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 `;
 
-const InputSubmit = styled.button`
-  background-color: #fcba04;
+const Button = styled.button`
+  background-color: ${props => props.bgColor};
   margin-top: 1rem;
   width: 100%;
   padding: 0.5rem 0;
   text-align: center;
-  color: #250001;
+  color: ${props => props.colorText};
   font-size: 1.2rem;
   text-transform: uppercase;
   border-radius: 5px;
@@ -32,24 +32,7 @@ const InputSubmit = styled.button`
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
   &:hover {
     transform: scale(0.98);
-  }
-`;
-
-const DeleteButton = styled.button`
-  background-color: #a50104;
-  margin-top: 1rem;
-  width: 100%;
-  padding: 0.5rem 0;
-  text-align: center;
-  color: #f3f3f3;
-  font-size: 1.2rem;
-  text-transform: uppercase;
-  border-radius: 5px;
-  font-weight: 500;
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-  &:hover {
-    transform: scale(0.98);
+    border-color:${props => props.bgColor};
   }
 `;
 
@@ -89,21 +72,21 @@ export default function NewEmployee() {
     setReload,
   } = useContext(FirebaseContext);
   const [errors, setErrors] = useState({});
-
   const { name, lastName, access } = values;
 
-  function deleteEmployee() {
+  const deleteEmployee = () => {
     firebase.db
       .collection("employees")
       .doc(idEmployee)
       .delete()
-      .then(function () {
+      .then(() => {
+        Swal.fire("El empleado ha sido eliminado", "", "success");
         setErrors({});
         setValues(initial_state);
         setImageUrl("");
-        Swal.fire("El empleado ha sido eliminado", "", "info");
+        setIdEmployee(null);
       })
-      .catch(function (error) {
+      .catch((error) => {
         Swal.fire(
           "Hubo un error",
           "Póngase en contacto con el administrador",
@@ -112,7 +95,16 @@ export default function NewEmployee() {
       });
   }
 
-  function createNewEmployee() {
+  const formReset = () => {
+
+    setValues(initial_state);
+    setImageUrl("");
+    setIdEmployee(null);
+    setErrors({});
+
+  }
+
+  const createNewEmployee = () => {
     const employee = {
       name,
       lastName,
@@ -130,10 +122,11 @@ export default function NewEmployee() {
           setErrors({});
           setValues(initial_state);
           setImageUrl("");
+          setIdEmployee(null);
         })
         .catch(function (error) {
           Swal.fire(
-            "Hubo un error",
+            "Huboooooo un error",
             "Póngase en contacto con el administrador",
             "error"
           );
@@ -143,7 +136,7 @@ export default function NewEmployee() {
         .collection("employees")
         .doc(idEmployee)
         .update(employee)
-        .then(function () {
+        .then(() => {
           Swal.fire(
             "Los datos del empleado han sido actualizados",
             "",
@@ -154,12 +147,12 @@ export default function NewEmployee() {
           setValues(initial_state);
           setImageUrl("");
         })
-        .catch(function (error) {
+        .catch((error) => {
           Swal.fire(
-            "Hubo un error",
+            "Huboaaaaaaa un error",
             "Póngase en contacto con el administrador",
             "error"
-          );
+          )
         });
       setReload(false);
     }
@@ -168,7 +161,7 @@ export default function NewEmployee() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!name || !lastName || !access) {
+    if (!name || !lastName || !access || !imageUrl) {
       setErrors({
         ...errors,
         fields: "Los campos y la imagen son obligatorios",
@@ -220,7 +213,6 @@ export default function NewEmployee() {
 
         <div className="col-md-6">
           <form onSubmit={handleSubmit} noValidate>
-            {/* {imageUrl && <img src={imageUrl} alt="imagen temporal" className="form-image" />} */}
             <TextField
               variant="outlined"
               required
@@ -259,13 +251,17 @@ export default function NewEmployee() {
               <option value={"denied"}>Denegado</option>
             </select>
 
-            <InputSubmit type="submit">Guardar</InputSubmit>
-            {idEmployee && (
-              <DeleteButton onClick={deleteEmployee}>Eliminar</DeleteButton>
-            )}
-            {errors.fields && <Error>{errors.fields}</Error>}
-            {errors.image && <Error>{errors.image}</Error>}
+            <Button bgColor="#fcba04" colorText="#250001" type="submit">
+              Guardar
+            </Button>
           </form>
+          {idEmployee && (
+            <>
+              <Button bgColor="#a50104" colorText="#f3f3f3" onClick={deleteEmployee}>Eliminar</Button>
+              <Button bgColor="white" colorText="#250001" onClick={formReset}>Nuevo</Button>
+            </>
+          )}
+          {errors.fields && <Error>{errors.fields}</Error>}
         </div>
       </div>
     </div>
