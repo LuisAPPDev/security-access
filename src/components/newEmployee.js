@@ -105,26 +105,28 @@ export default function NewEmployee() {
   }
 
   const createNewEmployee = () => {
-    const employee = {
-      name,
-      lastName,
-      access,
-      imageUrl,
-      createdAt: Date.now(),
-    };
+    
 
     if (!idEmployee) {
+    const employee = {
+            name,
+            lastName,
+            access,
+            imageUrl,
+            createdAt: Date.now(),
+          }
+
       firebase.db
         .collection("employees")
         .add(employee)
-        .then(function () {
+        .then(() => {
           Swal.fire("El empleado ha sido creado", "", "success");
           setErrors({});
           setValues(initial_state);
           setImageUrl("");
           setIdEmployee(null);
         })
-        .catch(function (error) {
+        .catch((error) => {
           Swal.fire(
             "Huboooooo un error",
             "Póngase en contacto con el administrador",
@@ -132,6 +134,14 @@ export default function NewEmployee() {
           );
         });
     } else {
+      const employee = {
+            name,
+            lastName,
+            access,
+            imageUrl,
+            
+        }
+
       firebase.db
         .collection("employees")
         .doc(idEmployee)
